@@ -336,7 +336,7 @@ def render_email_dispatch_tool():
                         status = "Failed"
                         
                         if email and prs_number:
-                            if send_email_with_attachment_bytes(sender_email, app_password, email, pdf_bytes, pdf.name, last_name):[cite: 7]
+                            if send_email_with_attachment_bytes(sender_email, app_password, email, pdf_bytes, pdf.name, last_name):
                                 status = "Sent"
                             else: status = "Failed to Send (SMTP Error)"
                         else:
