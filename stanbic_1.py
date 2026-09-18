@@ -423,12 +423,12 @@ def render_merge_pdfs_tool():
     pair_tab, triplet_tab = st.tabs(["Merge Pairs (2 Pages)", "Merge Triplets (3 Pages)"])
     
     with pair_tab:
-        st.write("Upload First and Second pages. The system will match them based on names and merge them into a Master PDF.")
+        st.write("Upload first and second pages. The system will match them based on names and merge them into a Master PDF.")
         col1, col2 = st.columns(2)
         with col1:
-            first_pages = st.file_uploader("Upload First Pages", type=["pdf"], accept_multiple_files=True, key="first_pages_pair")
+            first_pages = st.file_uploader("Upload first Pages", type=["pdf"], accept_multiple_files=True, key="first_pages_pair")
         with col2:
-            second_pages = st.file_uploader("Upload Second Pages", type=["pdf"], accept_multiple_files=True, key="second_pages_pair")
+            second_pages = st.file_uploader("Upload second Pages", type=["pdf"], accept_multiple_files=True, key="second_pages_pair")
             
         if st.button("Merge Pairs into Master PDF", type="primary"):
             if not first_pages or not second_pages:
@@ -477,14 +477,14 @@ def render_merge_pdfs_tool():
                     st.download_button("Download Merge Report", data=report_buffer.getvalue(), file_name="Merge_Report_Pairs.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
                     
     with triplet_tab:
-        st.write("Upload First, Second, and Third pages. The system matches all three based on names into a Master PDF.")
+        st.write("Upload first, second, and third pages. The system matches all three based on names into a Master PDF.")
         col1, col2, col3 = st.columns(3)
         with col1:
-            first_pages_trip = st.file_uploader("Upload First Pages", type=["pdf"], accept_multiple_files=True, key="first_pages_trip")
+            first_pages_trip = st.file_uploader("Upload first pages", type=["pdf"], accept_multiple_files=True, key="first_pages_trip")
         with col2:
-            second_pages_trip = st.file_uploader("Upload Second Pages", type=["pdf"], accept_multiple_files=True, key="second_pages_trip")
+            second_pages_trip = st.file_uploader("Upload second pages", type=["pdf"], accept_multiple_files=True, key="second_pages_trip")
         with col3:
-            third_pages_trip = st.file_uploader("Upload Third Pages", type=["pdf"], accept_multiple_files=True, key="third_pages_trip")
+            third_pages_trip = st.file_uploader("Upload third pages", type=["pdf"], accept_multiple_files=True, key="third_pages_trip")
             
         if st.button("Merge Triplets into Master PDF", type="primary"):
             if not first_pages_trip or not second_pages_trip or not third_pages_trip:
