@@ -273,17 +273,17 @@ def render_stanbic_tool():
                     st.download_button("Download Final Bank Upload Excel", data=output_2.getvalue(), file_name="Ready_For_Bank_Upload.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 
 def render_email_dispatch_tool():
-    st.header("PDF Merging & Email Dispatch")
+    st.header("Merge and Zip PRS pdf deeds ")
     step1, step2 = st.tabs(["Step 1: Merge PDFs", "Step 2: Dispatch Emails"])
 
     with step1:
-        st.write("Upload a specific PDF (like a DOA) to append to a batch of target PDFs.")
+        st.write("Upload a specific PDF to merge to each of the Deeds downloaded from ILMS.")
         specific_pdf = st.file_uploader("Upload the specific PDF to attach", type=["pdf"])
         target_pdfs = st.file_uploader("Upload target PDFs", type=["pdf"], accept_multiple_files=True)
         
-        if st.button("Merge and Generate ZIP", type="primary"):
+        if st.button("Merge and generate ZIP", type="primary"):
             if not specific_pdf or not target_pdfs:
-                st.warning("Please upload both the specific PDF and the target PDFs.")
+                st.warning("Please upload both the specific PDF and the PDF deeds downloaded from the system.")
             else:
                 with st.spinner("Merging PDFs..."):
                     zip_buffer = io.BytesIO()
@@ -358,7 +358,7 @@ def render_email_dispatch_tool():
 # ==========================================
 # MASTER TABS
 # ==========================================
-st.title("My Productivity Workspace")
+st.title("My Workspace")
 app_tabs = st.tabs(["🏦 Stanbic Generator", "📧 PDF Merging & Dispatch", "⚙️ Future Tool"])
 
 with app_tabs[0]: render_stanbic_tool()
