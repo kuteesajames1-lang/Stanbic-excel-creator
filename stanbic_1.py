@@ -26,7 +26,7 @@ def set_background(image_file):
         
         /* 2. Make the main central content block semi-transparent */
         [data-testid="stMainBlockContainer"] {{
-            background-color: rgba(255, 255, 255, 0.6); /* 85% opaque white */
+            background-color: rgba(0, 0, 0, 0.6); /* 85% opaque white */
             border-radius: 15px;
             padding: 20px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
