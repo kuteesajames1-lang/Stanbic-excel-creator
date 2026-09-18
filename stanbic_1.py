@@ -18,7 +18,7 @@ def apply_custom_styles(image_file):
     except FileNotFoundError:
         bg_css = "background-color: #f0f2f6;" # Fallback if image is missing
 
-st.markdown(
+    st.markdown(
         f"""
         <style>
         /* 1. Background Image */
