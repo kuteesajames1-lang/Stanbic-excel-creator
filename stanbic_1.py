@@ -190,7 +190,7 @@ def send_email_with_attachment_bytes(sender_email, app_password, recipient_email
             {sender_first_name}<br>
             Pensions</p>
             <br>
-            <img src="cid:{image_cid[1:-1]}" alt="Signature Animation">
+            <img src="cid:{image_cid[1:-1]}" alt="Signature Animation" width="350">
         </body>
         </html>
         """
