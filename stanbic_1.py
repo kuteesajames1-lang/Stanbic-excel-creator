@@ -132,7 +132,7 @@ def extract_account_number(bank_details):
 # TOOL 1: STANBIC GENERATOR LOGIC
 # ==========================================
 def render_stanbic_tool():
-    st.header("Stanbic Bank Upload Generator")
+    st.header("Stanbic Excel upload generator")
     
     # Nested tabs for the specific steps of this tool
     step1, step2 = st.tabs(["Step 1: Extract PDFs", "Step 2: Format Upload"])
