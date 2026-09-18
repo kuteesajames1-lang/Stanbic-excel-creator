@@ -98,7 +98,7 @@ def clean_text(text):
 def generate_narrative(source_file, member_name):
     if pd.isna(source_file) or not isinstance(source_file, str): return ""
     prefix = re.split(r'(?i)\s*PF\b', source_file)[0].strip()
-    return f"{prefix}_{member_name}"
+    return f"{prefix} {member_name}"
 
 def extract_sort_code(bank_details):
     if pd.isna(bank_details): return ""
@@ -138,9 +138,9 @@ def render_stanbic_tool():
     step1, step2 = st.tabs(["Step 1: Extract PDFs", "Step 2: Format Upload"])
     
     with step1:
-        st.write("Upload PDF files to extract raw payment data. Download and verify this sheet before Step 2.")
+        st.write("Upload PDF files to extract payment data to excel. Download and verify this Excel before Step 2.")
         uploaded_pdfs = st.file_uploader("Upload PDFs", type=["pdf"], accept_multiple_files=True)
-        if st.button("Extract Tables to Excel", type="primary"):
+        if st.button("Extract tables to Excel", type="primary"):
             if not uploaded_pdfs:
                 st.warning("Please upload at least one PDF.")
             else:
@@ -185,14 +185,14 @@ def render_stanbic_tool():
                     output = io.BytesIO()
                     with pd.ExcelWriter(output, engine="openpyxl") as writer: clean_df.to_excel(writer, index=False)
                     st.success(f"Processed {len(uploaded_pdfs)} file(s)!")
-                    st.download_button("Download Raw Extracted Excel", data=output.getvalue(), file_name="Clean_Bank_Upload.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                    st.download_button("Download extracted tables' Excel file", data=output.getvalue(), file_name="Payments.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
                 else:
                     st.error("No valid payment rows found.")
 
     with step2:
-        st.write("Upload the verified Excel file from Step 1 to generate narratives and map sort codes.")
-        uploaded_excel = st.file_uploader("Upload Cleaned Excel", type=["xlsx", "xls"])
-        if st.button("Generate Final Bank Upload", type="primary"):
+        st.write("Upload the verified Excel file from Step 1 to generate final Excel")
+        uploaded_excel = st.file_uploader("Upload cleaned Excel", type=["xlsx", "xls"])
+        if st.button("Generate final bank upload Excel", type="primary"):
             if not uploaded_excel:
                 st.warning("Please upload the Excel file.")
             else:
@@ -207,7 +207,7 @@ def render_stanbic_tool():
                                 "Narrative": generate_narrative(row['Source File'], row['Member Name']),
                                 "Sort Code": extract_sort_code(row['Bank details']),
                                 "Account Number": extract_account_number(row['Bank details']),
-                                "Amount": row['Amount'],
+                                "Amount": round(float(str(row['Amount']).replace(',', '')), 2),
                                 "Address": "Kampala"
                             })
                         final_df = pd.DataFrame(final_data)[['Beneficiary Name', 'Narrative', 'Sort Code', 'Account Number', 'Amount', 'Address']]
@@ -221,16 +221,16 @@ def render_stanbic_tool():
 # ==========================================
 # MAIN APP LAYOUT (MASTER TABS)
 # ==========================================
-st.title("My Productivity Workspace")
+st.title("My Workspace")
 
-# Create the top-level navigation tabs
+# navigation tabs
 app_tabs = st.tabs(["🏦 Stanbic Generator", "📊 Future Tool 1", "⚙️ Future Tool 2"])
 
-# Tab 1: Your complete Stanbic App
+# Tab1: Stan app
 with app_tabs[0]:
     render_stanbic_tool()
 
-# Tab 2: Placeholder for the next tool you build
+# Tab 2: Placeholder for the next tab
 with app_tabs[1]:
     st.header("Future Tool 1")
     st.info("This space is reserved for your next awesome Python script.")
