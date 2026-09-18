@@ -419,22 +419,22 @@ def render_email_dispatch_tool():
                 st.download_button("Download email dispatch report", data=report_buffer.getvalue(), file_name="Email_dispatch_repo.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 
 def render_merge_pdfs_tool():
-    st.header("Smart PDF Merger")
-    pair_tab, triplet_tab = st.tabs(["Merge Pairs (2 Pages)", "Merge Triplets (3 Pages)"])
+    st.header("Smart PDF merger")
+    pair_tab, triplet_tab = st.tabs(["Merge pairs (2 Pages)", "Merge triplets (3 Pages)"])
     
     with pair_tab:
-        st.write("Upload first and second pages. The system will match them based on names and merge them into a Master PDF.")
+        st.write("Upload first and second pages. The system will match them based on names and merge them into a master PDF.")
         col1, col2 = st.columns(2)
         with col1:
-            first_pages = st.file_uploader("Upload first Pages", type=["pdf"], accept_multiple_files=True, key="first_pages_pair")
+            first_pages = st.file_uploader("Upload first pages", type=["pdf"], accept_multiple_files=True, key="first_pages_pair")
         with col2:
-            second_pages = st.file_uploader("Upload second Pages", type=["pdf"], accept_multiple_files=True, key="second_pages_pair")
+            second_pages = st.file_uploader("Upload second pages", type=["pdf"], accept_multiple_files=True, key="second_pages_pair")
             
-        if st.button("Merge Pairs into Master PDF", type="primary"):
+        if st.button("Merge pairs into master PDF", type="primary"):
             if not first_pages or not second_pages:
                 st.warning("Please upload files into both boxes.")
             else:
-                with st.spinner("Matching and Merging..."):
+                with st.spinner("Matching and merging..."):
                     master_pdf = fitz.open()
                     report_rows = []
                     used_second = set()
@@ -473,8 +473,8 @@ def render_merge_pdfs_tool():
                     with pd.ExcelWriter(report_buffer, engine="openpyxl") as writer: df.to_excel(writer, index=False)
                     
                     st.success(f"Process complete! Merged {merged_count} pairs. {unmatched_count} unmatched.")
-                    st.download_button("Download Master PDF", data=pdf_bytes, file_name="MASTER_MERGED_PAIRS.pdf", mime="application/pdf")
-                    st.download_button("Download Merge Report", data=report_buffer.getvalue(), file_name="Merge_Report_Pairs.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                    st.download_button("Download Master PDF", data=pdf_bytes, file_name="Master_merged_pairs.pdf", mime="application/pdf")
+                    st.download_button("Download Merge Report", data=report_buffer.getvalue(), file_name="Merge_report.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
                     
     with triplet_tab:
         st.write("Upload first, second, and third pages. The system matches all three based on names into a Master PDF.")
@@ -537,8 +537,8 @@ def render_merge_pdfs_tool():
                     with pd.ExcelWriter(report_buffer, engine="openpyxl") as writer: df.to_excel(writer, index=False)
                     
                     st.success(f"Process complete! Merged {merged_count} triplets. {unmatched_count} incomplete.")
-                    st.download_button("Download Master PDF (Triplets)", data=pdf_bytes, file_name="MASTER_MERGED_TRIPLETS.pdf", mime="application/pdf")
-                    st.download_button("Download Triplets Merge Report", data=report_buffer.getvalue(), file_name="Merge_Report_Triplets.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                    st.download_button("Download Master PDF (Triplets)", data=pdf_bytes, file_name="Master.pdf", mime="application/pdf")
+                    st.download_button("Download  merge report", data=report_buffer.getvalue(), file_name="Merge_report.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 
 # ==========================================
 # MASTER TABS
