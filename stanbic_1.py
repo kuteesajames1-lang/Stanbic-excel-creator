@@ -2,6 +2,7 @@ import io
 import re
 import pandas as pd
 import pdfplumber
+import base64
 import streamlit as st
 
 # ==========================================
