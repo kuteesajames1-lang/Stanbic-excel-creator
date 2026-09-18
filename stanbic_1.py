@@ -9,6 +9,24 @@ import streamlit as st
 # CONFIGURATION & DICTIONARIES
 # ==========================================
 st.set_page_config(page_title="PV & Bank Upload Extractor", layout="centered")
+def set_background(image_file):
+    image_file="background.jpg"
+    with open(image_file, "rb") as f:
+        encoded_string = base64.b64encode(f.read()).decode()
+    st.markdown(
+        f"""
+        <style>
+        .stApp {{
+            background-image: url(data:image/jpeg;base64,{encoded_string});
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }}
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+set_background("background.jpg")
 st.title("Stanbic Bank Upload Generator")
 
 # Sort codes ported from stan2.py
