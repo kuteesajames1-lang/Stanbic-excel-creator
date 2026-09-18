@@ -16,7 +16,7 @@ def apply_custom_styles(image_file):
             encoded_string = base64.b64encode(f.read()).decode()
             bg_css = f"background-image: url(data:image/jpeg;base64,{encoded_string});"
     except FileNotFoundError:
-        bg_css = "background-color: #f0f2f6;" # Fallback if image is missing
+        bg_css = "background-color: #f0f2f6;"
 
     st.markdown(
         f"""
@@ -29,17 +29,22 @@ def apply_custom_styles(image_file):
             background-attachment: fixed;
         }}
         
-        /* 2. Transparent Content Box - Detached with rounded corners */
+        /* 2. Make the top Streamlit header completely transparent */
+        [data-testid="stHeader"] {{
+            background-color: transparent !important;
+        }}
+        
+        /* 3. Floating, detached Content Box */
         [data-testid="stMainBlockContainer"] {{
             background-color: rgba(0, 0, 0, 0.85);
-            border-radius: 20px;
-            padding: 30px;
-            margin-top: 60px; /* Pushes the box down from the top header */
-            margin-bottom: 50px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.5);
+            border-radius: 25px !important;
+            padding: 40px !important;
+            max-width: 85% !important; /* Detaches the box from the left and right edges */
+            margin: 70px auto 50px auto !important; /* Detaches from the top bar and centers it */
+            box-shadow: 0 10px 25px rgba(0,0,0,0.7);
         }}
 
-        /* 3. Sleek Tab Transition Animation */
+        /* 4. Sleek Tab Transition Animation */
         @keyframes slideFadeIn {{
             0% {{ opacity: 0; transform: translateY(15px); }}
             100% {{ opacity: 1; transform: translateY(0); }}
@@ -49,14 +54,14 @@ def apply_custom_styles(image_file):
             animation: slideFadeIn 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
         }}
         
-        /* 4. Style the top main tabs to spread across the screen */
+        /* 5. Style the top main tabs to spread across the screen */
         .stTabs [data-baseweb="tab-list"] {{
             display: flex;
             width: 100%;
             gap: 10px;
         }}
         .stTabs [data-baseweb="tab"] {{
-            flex: 1; /* Forces tabs to stretch evenly */
+            flex: 1;
             background-color: rgba(255, 255, 255, 0.1);
             border-radius: 10px 10px 0px 0px;
             padding-top: 15px;
@@ -68,8 +73,6 @@ def apply_custom_styles(image_file):
         """,
         unsafe_allow_html=True
     )
-
-# Apply the styles (Ensure background.jpg is still in your GitHub repo)
 apply_custom_styles("background.jpg")
 
 # ==========================================
