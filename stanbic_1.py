@@ -95,7 +95,7 @@ def clean_text(text):
 def generate_narrative(source_file, member_name):
     if pd.isna(source_file) or not isinstance(source_file, str): return ""
     prefix = re.split(r'(?i)\s*PF\b', source_file)[0].strip()
-    return f"{prefix}_{member_name}"
+    return f"{prefix} {member_name}"
 
 def extract_sort_code(bank_details):
     if pd.isna(bank_details): return ""
@@ -195,11 +195,11 @@ Pensions"""
 # APP RENDERING LOGIC
 # ==========================================
 def render_stanbic_tool():
-    st.header("Stanbic Bank Upload Generator")
+    st.header("Stanbic bank Excel generator")
     step1, step2 = st.tabs(["Step 1: Extract PDFs", "Step 2: Format Upload"])
     
     with step1:
-        st.write("Upload PDF files to extract raw payment data.")
+        st.write("Upload PDF files to extract payment data tables.")
         uploaded_pdfs = st.file_uploader("Upload PDFs", type=["pdf"], accept_multiple_files=True, key="stanbic_pdfs")
         if st.button("Extract Tables to Excel", type="primary"):
             if not uploaded_pdfs: st.warning("Please upload at least one PDF.")
@@ -244,13 +244,13 @@ def render_stanbic_tool():
                     output = io.BytesIO()
                     with pd.ExcelWriter(output, engine="openpyxl") as writer: clean_df.to_excel(writer, index=False)
                     st.success(f"Processed {len(uploaded_pdfs)} file(s)!")
-                    st.download_button("Download Raw Extracted Excel", data=output.getvalue(), file_name="Clean_Bank_Upload.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                    st.download_button("Download extracted Excel for payments", data=output.getvalue(), file_name="Payments.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
                 else: st.error("No valid payment rows found.")
 
     with step2:
-        st.write("Upload the verified Excel file from Step 1 to generate narratives and map sort codes.")
-        uploaded_excel = st.file_uploader("Upload Cleaned Excel", type=["xlsx", "xls"], key="stanbic_excel")
-        if st.button("Generate Final Bank Upload", type="primary", key="stanbic_btn_2"):
+        st.write("Upload the verified Excel file from Step 1 to generate the final excel.")
+        uploaded_excel = st.file_uploader("Upload cleaned Excel", type=["xlsx", "xls"], key="stanbic_excel")
+        if st.button("Generate final bank upload Excel", type="primary", key="stanbic_btn_2"):
             if not uploaded_excel: st.warning("Please upload the Excel file.")
             else:
                 with st.spinner("Formatting records..."):
@@ -270,7 +270,7 @@ def render_stanbic_tool():
                     output_2 = io.BytesIO()
                     with pd.ExcelWriter(output_2, engine='openpyxl') as writer: final_df.to_excel(writer, index=False)
                     st.success(f"Formatted {len(final_data)} valid transactions!")
-                    st.download_button("Download Final Bank Upload Excel", data=output_2.getvalue(), file_name="Ready_For_Bank_Upload.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                    st.download_button("Download Final Bank Upload Excel", data=output_2.getvalue(), file_name="Ready_for_bank_upload.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 
 def render_email_dispatch_tool():
     st.header("Merge and Zip PRS pdf deeds ")
