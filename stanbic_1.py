@@ -10,6 +10,7 @@ import fitz  # PyMuPDF
 from pypdf import PdfReader, PdfWriter
 import streamlit as st
 from email.message import EmailMessage
+from email.utils import make_msgid
 
 # ==========================================
 # CONFIGURATION & CSS (Background + Transitions)
@@ -168,29 +169,56 @@ def send_email_with_attachment_bytes(sender_email, app_password, recipient_email
         msg['Subject'] = f"Policy Document for Review and Signature - {last_name}"
         msg['From'] = sender_email
         msg['To'] = recipient_email
-        msg['Cc'] = "anne.naisiko@icea.co.ug, pensions@icea.co.ug"
-
-        body = f"""Dear {last_name},
-
-Thank you for Choosing ICEA LION Life Assurance (Uganda) as your preferred insurer.
-Attached are your policy documents for your review and signature. Kindly sign and return a copy to us at your earliest convenience for our records.
-We appreciate your prompt attention to this matter and look forward to your response.
-
-Kind regards,
-James
-Pensions"""
-        msg.set_content(body)
+        msg['Cc'] = [
+    "anne.naisiko@icea.co.ug",
+    'pensions@icea.co.ug'
+]
+        
+        # Extract the first name from the email
+        sender_first_name = sender_email.split('.')[0].capitalize()
+        image_cid = make_msgid()
+        
+        # 3. Build the HTML email body
+        html_body = f"""
+        <html>
+        <body>
+            <p>Dear {last_name},</p>
+            <p>Thank you for Choosing ICEA LION Life Assurance (Uganda) as your preferred insurer.<br>
+            Attached are your policy documents for your review and signature. Kindly sign and return a copy to us at your earliest convenience for our records.<br>
+            We appreciate your prompt attention to this matter and look forward to your response.</p>
+            <p>Kind regards,<br>
+            {sender_first_name}<br>
+            Pensions</p>
+            <br>
+            <img src="cid:{image_cid[1:-1]}" alt="Signature Animation">
+        </body>
+        </html>
+        """
+        
+        # Set a plain text fallback, then add the HTML version
+        msg.set_content(f"Dear {last_name},\n\nPlease view this email in an HTML-compatible client.")
+        msg.add_alternative(html_body, subtype='html')
+        
+        # 4. Read the GIF file and embed it inline
+        try:
+            with open("signature.gif", "rb") as img:
+                msg.get_payload()[1].add_related(img.read(), 'image', 'gif', cid=image_cid)
+        except FileNotFoundError:
+            st.warning("signature.gif was not found. Email will send without the image.")
+            
+        # 5. Attach the merged PDF file
         msg.add_attachment(pdf_bytes, maintype='application', subtype='pdf', filename=filename)
 
+        # 6. Dispatch the email
         with smtplib.SMTP('smtp.gmail.com', 587) as smtp:
             smtp.starttls()
             smtp.login(sender_email, app_password)
             smtp.send_message(msg)
+            
         return True
     except Exception as e:
         st.error(f"SMTP Error for {recipient_email}: {e}") 
         return False
-
 # ==========================================
 # APP RENDERING LOGIC
 # ==========================================
@@ -273,7 +301,7 @@ def render_stanbic_tool():
                     st.download_button("Download Final Bank Upload Excel", data=output_2.getvalue(), file_name="Ready_for_bank_upload.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 
 def render_email_dispatch_tool():
-    st.header("Merge and Zip PRS pdf deeds ")
+    st.header("Merge, Zip, process and send PRS deeds ")
     step1, step2 = st.tabs(["Step 1: Merge PDFs", "Step 2: Dispatch Emails"])
 
     with step1:
@@ -359,7 +387,7 @@ def render_email_dispatch_tool():
 # MASTER TABS
 # ==========================================
 st.title("My Workspace")
-app_tabs = st.tabs(["🏦 Stanbic Generator", "📧 PDF Merging & Dispatch", "⚙️ Future Tool"])
+app_tabs = st.tabs(["🏦 Stanbic Generator", "📧 PRS Deeds", "⚙️ Future Tool"])
 
 with app_tabs[0]: render_stanbic_tool()
 with app_tabs[1]: render_email_dispatch_tool()
