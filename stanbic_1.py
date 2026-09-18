@@ -10,22 +10,38 @@ import streamlit as st
 # ==========================================
 st.set_page_config(page_title="PV & Bank Upload Extractor", layout="centered")
 def set_background(image_file):
-    image_file="background.jpg"
     with open(image_file, "rb") as f:
         encoded_string = base64.b64encode(f.read()).decode()
+    
     st.markdown(
         f"""
         <style>
+        /* 1. The background image itself */
         .stApp {{
             background-image: url(data:image/jpeg;base64,{encoded_string});
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
         }}
+        
+        /* 2. Make the main central content block semi-transparent */
+        [data-testid="stMainBlockContainer"] {{
+            background-color: rgba(255, 255, 255, 0.85); /* 85% opaque white */
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }}
+
+        /* 3. Make the drag-and-drop file uploader boxes slightly more transparent */
+        [data-testid="stFileUploader"] {{
+            background-color: rgba(255, 255, 255, 0.5);
+            border-radius: 10px;
+        }}
         </style>
         """,
         unsafe_allow_html=True
     )
+
 set_background("background.jpg")
 st.title("Stanbic Bank Upload Generator")
 
