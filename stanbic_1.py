@@ -8,7 +8,7 @@ import streamlit as st
 # ==========================================
 # CONFIGURATION & CSS (Background + Transitions)
 # ==========================================
-st.set_page_config(page_title="My Workspace", layout="centered")
+st.set_page_config(page_title="My Workspace", layout="wide")
 
 def apply_custom_styles(image_file):
     try:
@@ -18,7 +18,7 @@ def apply_custom_styles(image_file):
     except FileNotFoundError:
         bg_css = "background-color: #f0f2f6;" # Fallback if image is missing
 
-    st.markdown(
+st.markdown(
         f"""
         <style>
         /* 1. Background Image */
@@ -29,12 +29,14 @@ def apply_custom_styles(image_file):
             background-attachment: fixed;
         }}
         
-        /* 2. Transparent Content Box */
+        /* 2. Transparent Content Box - Detached with rounded corners */
         [data-testid="stMainBlockContainer"] {{
             background-color: rgba(0, 0, 0, 0.85);
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-radius: 20px;
+            padding: 30px;
+            margin-top: 60px; /* Pushes the box down from the top header */
+            margin-bottom: 50px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.5);
         }}
 
         /* 3. Sleek Tab Transition Animation */
@@ -47,15 +49,20 @@ def apply_custom_styles(image_file):
             animation: slideFadeIn 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
         }}
         
-        /* 4. Style the top main tabs to look like app navigation */
+        /* 4. Style the top main tabs to spread across the screen */
         .stTabs [data-baseweb="tab-list"] {{
+            display: flex;
+            width: 100%;
             gap: 10px;
         }}
         .stTabs [data-baseweb="tab"] {{
-            background-color: rgba(255, 255, 255, 0.5);
-            border-radius: 5px 5px 0px 0px;
-            padding-top: 10px;
-            padding-bottom: 10px;
+            flex: 1; /* Forces tabs to stretch evenly */
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px 10px 0px 0px;
+            padding-top: 15px;
+            padding-bottom: 15px;
+            display: flex;
+            justify-content: center;
         }}
         </style>
         """,
