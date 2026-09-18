@@ -302,7 +302,7 @@ def render_stanbic_tool():
 
 def render_email_dispatch_tool():
     st.header("Merge, Zip, process and send PRS deeds ")
-    step1, step2 = st.tabs(["Step 1: Merge PDFs", "Step 2: Dispatch Emails"])
+    step1, step2 = st.tabs(["Step 1: Merge PDFs", "Step 2: Send emails"])
 
     with step1:
         st.write("Upload a specific PDF to merge to each of the Deeds downloaded from ILMS.")
@@ -337,7 +337,7 @@ def render_email_dispatch_tool():
                     st.download_button("Download Merged PDFs (ZIP)", data=zip_buffer.getvalue(), file_name="Merged_PDFs.zip", mime="application/zip")
 
     with step2:
-        st.write("Extract details from merged PDFs and dispatch emails automatically.")
+        st.write("Extract details from merged PDFs and send emails automatically.")
         
         col1, col2 = st.columns(2)
         with col1:
@@ -381,7 +381,7 @@ def render_email_dispatch_tool():
                 
                 st.success("Email processing complete!")
                 st.dataframe(df)
-                st.download_button("Download Dispatch Report", data=report_buffer.getvalue(), file_name="Email_Dispatch_Report.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                st.download_button("Download email dispatch report", data=report_buffer.getvalue(), file_name="Email_dispatch_repo.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 
 # ==========================================
 # MASTER TABS
