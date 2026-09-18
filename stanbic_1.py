@@ -295,15 +295,15 @@ def render_email_dispatch_tool():
                             reader_target = PdfReader(target)
                             
                             if len(reader_target.pages) > 0:
-                                writer.add_page(reader_target.pages[0])[cite: 8]
+                                writer.add_page(reader_target.pages[0])
                             else: continue
                                 
                             for page in reader_specific.pages:
-                                writer.add_page(page)[cite: 8]
+                                writer.add_page(page)
                                 
                             output_stream = io.BytesIO()
                             writer.write(output_stream)
-                            zipf.writestr(target.name, output_stream.getvalue())[cite: 8]
+                            zipf.writestr(target.name, output_stream.getvalue())
                             
                     st.success("All PDFs merged successfully!")
                     st.download_button("Download Merged PDFs (ZIP)", data=zip_buffer.getvalue(), file_name="Merged_PDFs.zip", mime="application/zip")
@@ -318,7 +318,7 @@ def render_email_dispatch_tool():
                 ["james.kuteesa@icea.co.ug", "edgar.kalyango@icea.co.ug", "esther.nakatemwa@icea.co.ug", "fortunate.biira@icea.co.ug"]
             )
         with col2:
-            app_password = st.text_input("App Password", type="password", help="Enter the 16-character Google App Password[cite: 7]")
+            app_password = st.text_input("App Password", type="password", help="Enter the 16-character Google App Password")
             
         merged_pdfs = st.file_uploader("Upload Merged PDFs to Send", type=["pdf"], accept_multiple_files=True, key="dispatch_pdfs")
         
@@ -332,7 +332,7 @@ def render_email_dispatch_tool():
                 with st.spinner("Sending emails..."):
                     for i, pdf in enumerate(merged_pdfs):
                         pdf_bytes = pdf.read()
-                        email, prs_number, last_name = extract_details_from_pdf_bytes(pdf_bytes, pdf.name)[cite: 7]
+                        email, prs_number, last_name = extract_details_from_pdf_bytes(pdf_bytes, pdf.name)
                         status = "Failed"
                         
                         if email and prs_number:
@@ -342,9 +342,9 @@ def render_email_dispatch_tool():
                         else:
                             if not email: status = "Missing Email"
                             if not prs_number: status = "Missing PRS Number"
-                            if not email and not prs_number: status = "Missing Both"[cite: 7]
+                            if not email and not prs_number: status = "Missing Both"
                             
-                        excel_data.append({"Filename": pdf.name, "PRS Number": prs_number or "Not Found", "Last Name": last_name or "Not Found", "Email": email or "Not Found", "Status": status})[cite: 7]
+                        excel_data.append({"Filename": pdf.name, "PRS Number": prs_number or "Not Found", "Last Name": last_name or "Not Found", "Email": email or "Not Found", "Status": status})
                         progress_bar.progress((i + 1) / len(merged_pdfs))
                         
                 df = pd.DataFrame(excel_data)
