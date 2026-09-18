@@ -31,7 +31,7 @@ def apply_custom_styles(image_file):
         
         /* 2. Transparent Content Box */
         [data-testid="stMainBlockContainer"] {{
-            background-color: rgba(255, 255, 255, 0.85);
+            background-color: rgba(0, 0, 0, 0.85);
             border-radius: 15px;
             padding: 20px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
