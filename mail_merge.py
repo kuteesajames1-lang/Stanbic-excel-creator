@@ -7,26 +7,26 @@ from email.message import EmailMessage
 from email.utils import make_msgid
 
 def render_mail_merge_tool():
-    st.header("Universal Mail Merge")
+    st.header("Universal mail merge")
     st.write("Upload an Excel contact list, map your columns, and send mass emails with grouped attachments.")
     
     # 1. Downloadable Template Section
     try:
         with open("Template.xlsx", "rb") as template_file:
             st.download_button(
-                label="📥 Download Excel Template",
+                label="Download excel template",
                 data=template_file,
                 file_name="Template.xlsx",
                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                 help="Download the standard Excel template for reference."
             )
     except FileNotFoundError:
-        st.info("💡 Note: Upload 'Template.xlsx' to your GitHub repository to enable the download button.")
+        st.info("Note: Upload 'Template.xlsx' to your GitHub repository to enable the download button.")
 
     st.divider()
 
     # 2. Data Upload & Mapping
-    st.subheader("1. Data & Column Mapping")
+    st.subheader("1. Data & column mapping")
     contacts_file = st.file_uploader("Upload Contacts (Excel)", type=["xlsx", "xls"])
     
     if contacts_file:
@@ -35,40 +35,40 @@ def render_mail_merge_tool():
         
         col1, col2, col3, col4 = st.columns(4)
         with col1:
-            email_col = st.selectbox("Column containing Email:", columns)
+            email_col = st.selectbox("Emails:", columns)
         with col2:
-            contact_col = st.selectbox("Column containing Contact Name:", columns, help="Used for 'Dear [Name]'")
+            contact_col = st.selectbox("Contact person name:", columns, help="Used for 'Dear [Name]'")
         with col3:
-            match_col = st.selectbox("Column to match Attachments:", columns, help="The exact file name (without .pdf) must match this.")
+            match_col = st.selectbox("Attachments' name:", columns, help="The exact file name must match this.")
         with col4:
-            scheme_col = st.selectbox("Column containing Scheme:", columns, help="Appended to the end of the subject line.")
+            scheme_col = st.selectbox("Scheme:", columns, help="Added to the end of the subject line.")
             
         st.divider()
         
         # 3. Email Configuration
-        st.subheader("2. Email Configuration")
+        st.subheader("2. Email configuration")
         c1, c2 = st.columns(2)
         with c1:
-            sender_email = st.text_input("Sender Email Address", placeholder="e.g., james.kuteesa@icea.co.ug")
+            sender_email = st.text_input("Sender's email", placeholder="e.g., james.kuteesa@icea.co.ug")
         with c2:
-            app_password = st.text_input("App Password", type="password")
+            app_password = st.text_input("App password", type="password")
             
-        base_subject = st.text_input("Email Subject Base", placeholder="e.g., Interest Declaration 2023")
-        email_body = st.text_area("Email Body (Plain Text)", height=150, placeholder="Type your email message here. The 'Dear [Name]' and signature will be added automatically.")
+        base_subject = st.text_input("Email subject", placeholder="e.g Interest declaration 2025")
+        email_body = st.text_area("Email body", height=150, placeholder="Type your email message here. The 'Dear [Name]' and signature will be added automatically")
         
         st.divider()
         
         # 4. Attachments Upload
-        st.subheader("3. Upload Attachments")
+        st.subheader("3. Upload attachments")
         st.write("Upload groups of attachments. If files from different groups share the exact same name (matching the column selected above), they will be attached to the same email.")
         
         att_col1, att_col2, att_col3 = st.columns(3)
         with att_col1:
-            group_1 = st.file_uploader("Attachment Group 1", accept_multiple_files=True)
+            group_1 = st.file_uploader("Attachment group 1", accept_multiple_files=True)
         with att_col2:
-            group_2 = st.file_uploader("Attachment Group 2", accept_multiple_files=True)
+            group_2 = st.file_uploader("Attachment group 2", accept_multiple_files=True)
         with att_col3:
-            group_3 = st.file_uploader("Attachment Group 3", accept_multiple_files=True)
+            group_3 = st.file_uploader("Attachment group 3", accept_multiple_files=True)
             
         # Combine all uploaded files into one list
         all_attachments = (group_1 or []) + (group_2 or []) + (group_3 or [])
@@ -76,7 +76,7 @@ def render_mail_merge_tool():
         st.divider()
         
         # 5. Dispatch Logic
-        if st.button("🚀 Run Mail Merge", type="primary"):
+        if st.button("Start mail merge", type="primary"):
             if not all([sender_email, app_password, base_subject, email_body]):
                 st.warning("Please fill in the sender email, app password, subject, and body.")
             elif not all_attachments:
@@ -92,7 +92,7 @@ def render_mail_merge_tool():
                 
                 report_data = [] # List to store data for the Excel report
                 
-                with st.spinner("Dispatching emails..."):
+                with st.spinner("Sending emails..."):
                     for index, row in df.iterrows():
                         recipient_email = str(row[email_col]).strip()
                         match_identifier = str(row[match_col]).strip()
@@ -112,7 +112,7 @@ def render_mail_merge_tool():
                         
                         # Check for valid email
                         if pd.isna(recipient_email) or "@" not in recipient_email:
-                            row_status = "Skipped (Invalid Email)"
+                            row_status = "Skipped (Invalid email)"
                             error_count += 1
                         else:
                             # Find all attachments that exactly match the identifier
@@ -123,7 +123,7 @@ def render_mail_merge_tool():
                                     matched_files.append(file)
                                     
                             if not matched_files:
-                                row_status = "Skipped (No Attachment Match)"
+                                row_status = "Skipped (No attachment match)"
                                 error_count += 1
                             else:
                                 attached_files_str = ", ".join([f.name for f in matched_files])
@@ -169,7 +169,7 @@ def render_mail_merge_tool():
                                         smtp.login(sender_email, app_password)
                                         smtp.send_message(msg)
                                         
-                                    row_status = "Sent Successfully"
+                                    row_status = "Sent successfully"
                                     success_count += 1
                                     
                                 except Exception as e:
@@ -177,7 +177,7 @@ def render_mail_merge_tool():
                                     error_count += 1
                         
                         # Add tracking info to the report data
-                        row_dict["Attachments Used"] = attached_files_str
+                        row_dict["Attachments used"] = attached_files_str
                         row_dict["Status"] = row_status
                         report_data.append(row_dict)
                             
@@ -185,14 +185,14 @@ def render_mail_merge_tool():
                         progress_bar.progress((index + 1) / len(df))
                         
                 progress_bar.empty()
-                st.success(f"Mail merge complete! Successfully sent: {success_count} | Skipped/Failed: {error_count}")
+                st.success(f"Mail merge complete! successfully sent: {success_count} | Skipped/failed: {error_count}")
                 
                 # Generate and offer the report for download
                 report_df = pd.DataFrame(report_data)
                 
                 # Reorder columns to put tracking at the front
                 cols = report_df.columns.tolist()
-                tracking_cols = ["Status", "Attachments Used"]
+                tracking_cols = ["Status", "Attachments used"]
                 original_cols = [c for c in cols if c not in tracking_cols]
                 report_df = report_df[tracking_cols + original_cols]
                 
@@ -201,9 +201,9 @@ def render_mail_merge_tool():
                     report_df.to_excel(writer, index=False)
                 
                 st.download_button(
-                    label="📄 Download Dispatch Report",
+                    label="Download dispatch report",
                     data=report_buffer.getvalue(),
-                    file_name="Mail_Merge_Report.xlsx",
+                    file_name="Dispatch repo.xlsx",
                     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                     type="primary"
                 )
