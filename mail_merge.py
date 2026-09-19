@@ -55,7 +55,6 @@ def render_mail_merge_tool():
             
         base_subject = st.text_input("Email subject", placeholder="e.g Interest declaration 2025")
         email_body = st.text_area("Email body", height=150, placeholder="Type your email message here. The 'Dear [Name]' and signature will be added automatically")
-        
         st.divider()
         
         # 4. Attachments Upload
