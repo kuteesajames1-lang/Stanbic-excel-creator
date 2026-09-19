@@ -35,13 +35,13 @@ def render_mail_merge_tool():
         
         col1, col2, col3, col4 = st.columns(4)
         with col1:
-            email_col = st.selectbox("Emails:", columns)
+            email_col = st.selectbox("Receiver email:", columns)
         with col2:
             contact_col = st.selectbox("Contact person name:", columns, help="Used for 'Dear [Name]'")
         with col3:
-            match_col = st.selectbox("Attachments' name:", columns, help="The exact file name must match this.")
+            match_col = st.selectbox("Name: of attachment", columns, help="The exact file name must match this.")
         with col4:
-            scheme_col = st.selectbox("Scheme:", columns, help="Added to the end of the subject line.")
+            scheme_col = st.selectbox("Scheme name:", columns, help="Added to the end of the subject line.")
             
         st.divider()
         
@@ -59,7 +59,7 @@ def render_mail_merge_tool():
         
         # 4. Attachments Upload
         st.subheader("3. Upload attachments")
-        st.write("Upload groups of attachments. If files from different groups share the exact same name (matching the column selected above), they will be attached to the same email.")
+        st.write("Upload groups of attachments(atleast one group). If files from different groups share the exact same name (matching the column selected above), they will be attached to the same email.")
         
         att_col1, att_col2, att_col3 = st.columns(3)
         with att_col1:
