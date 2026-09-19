@@ -75,8 +75,12 @@ def render_mail_merge_tool():
         st.divider()
         
         # 5. Dispatch Logic
+        button_placeholder = st.empty()
         if st.button("Start mail merge", type="primary"):
+            button_placeholder.empty()
             if not all([sender_email, app_password, base_subject, email_body]):
+        
+           
                 st.warning("Please fill in the sender email, app password, subject, and body.")
             elif not all_attachments:
                 st.warning("Please upload at least one attachment.")
