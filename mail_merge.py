@@ -33,13 +33,16 @@ def render_mail_merge_tool():
         df = pd.read_excel(contacts_file)
         columns = df.columns.tolist()
         
-        col1, col2, col3 = st.columns(3)
+        # Updated to 4 columns to include the Contact Person
+        col1, col2, col3, col4 = st.columns(4)
         with col1:
-            email_col = st.selectbox("Column containing Email Addresses:", columns)
+            email_col = st.selectbox("Column containing Email:", columns)
         with col2:
-            match_col = st.selectbox("Column to match Attachment Names:", columns, help="The exact file name (without .pdf) must match this column.")
+            contact_col = st.selectbox("Column containing Contact Name:", columns, help="Used for 'Dear [Name]'")
         with col3:
-            scheme_col = st.selectbox("Column containing Scheme Name:", columns, help="This will be appended to the end of the subject line.")
+            match_col = st.selectbox("Column to match Attachments:", columns, help="The exact file name (without .pdf) must match this.")
+        with col4:
+            scheme_col = st.selectbox("Column containing Scheme:", columns, help="Appended to the end of the subject line.")
             
         st.divider()
         
@@ -52,7 +55,7 @@ def render_mail_merge_tool():
             app_password = st.text_input("App Password", type="password")
             
         base_subject = st.text_input("Email Subject Base", placeholder="e.g., Interest Declaration 2023")
-        email_body = st.text_area("Email Body (Plain Text)", height=150, placeholder="Type your email message here. The signature and GIF will be added automatically.")
+        email_body = st.text_area("Email Body (Plain Text)", height=150, placeholder="Type your email message here. The 'Dear [Name]' and signature will be added automatically.")
         
         st.divider()
         
@@ -81,7 +84,6 @@ def render_mail_merge_tool():
                 st.warning("Please upload at least one attachment.")
             else:
                 progress_bar = st.progress(0)
-                status_text = st.empty()
                 
                 # Extract first name for sign-off (e.g., james.kuteesa -> James)
                 sender_first_name = sender_email.split('@')[0].split('.')[0].capitalize()
@@ -94,6 +96,13 @@ def render_mail_merge_tool():
                         recipient_email = str(row[email_col]).strip()
                         match_identifier = str(row[match_col]).strip()
                         scheme_name = str(row[scheme_col]).strip()
+                        
+                        # Extract and format the recipient's first name
+                        raw_contact = row[contact_col]
+                        if pd.isna(raw_contact) or str(raw_contact).strip() == "":
+                            recipient_first_name = "Client"
+                        else:
+                            recipient_first_name = str(raw_contact).strip().split()[0].title()
                         
                         # Skip if no valid email
                         if pd.isna(recipient_email) or "@" not in recipient_email:
@@ -126,6 +135,7 @@ def render_mail_merge_tool():
                             html_content = f"""
                             <html>
                             <body>
+                                <p>Dear {recipient_first_name},</p>
                                 <p>{formatted_body_html}</p>
                                 <p>Kind regards,<br>
                                 {sender_first_name}<br>
