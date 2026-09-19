@@ -33,7 +33,6 @@ def render_mail_merge_tool():
         df = pd.read_excel(contacts_file)
         columns = df.columns.tolist()
         
-        # Updated to 4 columns to include the Contact Person
         col1, col2, col3, col4 = st.columns(4)
         with col1:
             email_col = st.selectbox("Column containing Email:", columns)
@@ -91,6 +90,8 @@ def render_mail_merge_tool():
                 success_count = 0
                 error_count = 0
                 
+                report_data = [] # List to store data for the Excel report
+                
                 with st.spinner("Dispatching emails..."):
                     for index, row in df.iterrows():
                         recipient_email = str(row[email_col]).strip()
@@ -104,82 +105,105 @@ def render_mail_merge_tool():
                         else:
                             recipient_first_name = str(raw_contact).strip().split()[0].title()
                         
-                        # Skip if no valid email
+                        # Setup tracking variables for the report
+                        row_status = "Failed"
+                        attached_files_str = "None"
+                        row_dict = row.to_dict()
+                        
+                        # Check for valid email
                         if pd.isna(recipient_email) or "@" not in recipient_email:
-                            continue
-                            
-                        # Find all attachments that exactly match the identifier (ignoring file extension)
-                        matched_files = []
-                        for file in all_attachments:
-                            file_base_name = os.path.splitext(file.name)[0].strip()
-                            if file_base_name.lower() == match_identifier.lower():
-                                matched_files.append(file)
-                                
-                        if not matched_files:
-                            # Skip if no attachments are found for this user
+                            row_status = "Skipped (Invalid Email)"
                             error_count += 1
-                            continue
-                            
-                        try:
-                            msg = EmailMessage()
-                            # Construct dynamic subject
-                            msg['Subject'] = f"{base_subject} - {scheme_name}"
-                            msg['From'] = sender_email
-                            msg['To'] = recipient_email
-                            
-                            image_cid = make_msgid()
-                            
-                            # Format Body (Converting newlines to HTML breaks)
-                            formatted_body_html = email_body.replace('\n', '<br>')
-                            
-                            html_content = f"""
-                            <html>
-                            <body>
-                                <p>Dear {recipient_first_name},</p>
-                                <p>{formatted_body_html}</p>
-                                <p>Kind regards,<br>
-                                {sender_first_name}<br>
-                                Pensions</p>
-                                <br>
-                                <img src="cid:{image_cid[1:-1]}" alt="Signature" width="350">
-                            </body>
-                            </html>
-                            """
-                            
-                            msg.set_content("Please view this email in an HTML-compatible client.")
-                            msg.add_alternative(html_content, subtype='html')
-                            
-                            # Embed GIF
-                            try:
-                                with open("signature.gif", "rb") as img:
-                                    msg.get_payload()[1].add_related(img.read(), 'image', 'gif', cid=image_cid)
-                            except FileNotFoundError:
-                                pass # Sends without image if missing
+                        else:
+                            # Find all attachments that exactly match the identifier
+                            matched_files = []
+                            for file in all_attachments:
+                                file_base_name = os.path.splitext(file.name)[0].strip()
+                                if file_base_name.lower() == match_identifier.lower():
+                                    matched_files.append(file)
+                                    
+                            if not matched_files:
+                                row_status = "Skipped (No Attachment Match)"
+                                error_count += 1
+                            else:
+                                attached_files_str = ", ".join([f.name for f in matched_files])
                                 
-                            # Attach all matched files
-                            for file in matched_files:
-                                file.seek(0)
-                                msg.add_attachment(
-                                    file.read(), 
-                                    maintype='application', 
-                                    subtype='octet-stream', 
-                                    filename=file.name
-                                )
-                                
-                            # Send Email
-                            with smtplib.SMTP('smtp.gmail.com', 587) as smtp:
-                                smtp.starttls()
-                                smtp.login(sender_email, app_password)
-                                smtp.send_message(msg)
-                                
-                            success_count += 1
-                            
-                        except Exception as e:
-                            st.error(f"Failed to send to {recipient_email}: {str(e)}")
-                            error_count += 1
+                                try:
+                                    msg = EmailMessage()
+                                    msg['Subject'] = f"{base_subject} - {scheme_name}"
+                                    msg['From'] = sender_email
+                                    msg['To'] = recipient_email
+                                    
+                                    image_cid = make_msgid()
+                                    formatted_body_html = email_body.replace('\n', '<br>')
+                                    
+                                    html_content = f"""
+                                    <html>
+                                    <body>
+                                        <p>Dear {recipient_first_name},</p>
+                                        <p>{formatted_body_html}</p>
+                                        <p>Kind regards,<br>
+                                        {sender_first_name}<br>
+                                        Pensions</p>
+                                        <br>
+                                        <img src="cid:{image_cid[1:-1]}" alt="Signature" width="350">
+                                    </body>
+                                    </html>
+                                    """
+                                    
+                                    msg.set_content("Please view this email in an HTML-compatible client.")
+                                    msg.add_alternative(html_content, subtype='html')
+                                    
+                                    try:
+                                        with open("signature.gif", "rb") as img:
+                                            msg.get_payload()[1].add_related(img.read(), 'image', 'gif', cid=image_cid)
+                                    except FileNotFoundError:
+                                        pass 
+                                        
+                                    for file in matched_files:
+                                        file.seek(0)
+                                        msg.add_attachment(file.read(), maintype='application', subtype='octet-stream', filename=file.name)
+                                        
+                                    with smtplib.SMTP('smtp.gmail.com', 587) as smtp:
+                                        smtp.starttls()
+                                        smtp.login(sender_email, app_password)
+                                        smtp.send_message(msg)
+                                        
+                                    row_status = "Sent Successfully"
+                                    success_count += 1
+                                    
+                                except Exception as e:
+                                    row_status = f"Failed (SMTP Error): {str(e)}"
+                                    error_count += 1
+                        
+                        # Add tracking info to the report data
+                        row_dict["Attachments Used"] = attached_files_str
+                        row_dict["Status"] = row_status
+                        report_data.append(row_dict)
                             
                         # Update progress bar
                         progress_bar.progress((index + 1) / len(df))
                         
                 progress_bar.empty()
                 st.success(f"Mail merge complete! Successfully sent: {success_count} | Skipped/Failed: {error_count}")
+                
+                # Generate and offer the report for download
+                report_df = pd.DataFrame(report_data)
+                
+                # Reorder columns to put tracking at the front
+                cols = report_df.columns.tolist()
+                tracking_cols = ["Status", "Attachments Used"]
+                original_cols = [c for c in cols if c not in tracking_cols]
+                report_df = report_df[tracking_cols + original_cols]
+                
+                report_buffer = io.BytesIO()
+                with pd.ExcelWriter(report_buffer, engine='openpyxl') as writer:
+                    report_df.to_excel(writer, index=False)
+                
+                st.download_button(
+                    label="📄 Download Dispatch Report",
+                    data=report_buffer.getvalue(),
+                    file_name="Mail_Merge_Report.xlsx",
+                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    type="primary"
+                )
