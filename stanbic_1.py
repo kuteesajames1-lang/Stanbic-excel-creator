@@ -424,12 +424,12 @@ def render_merge_pdfs_tool():
     pair_tab, triplet_tab = st.tabs(["Merge pairs (2 Pages)", "Merge triplets (3 Pages)"])
     
     with pair_tab:
-        st.write("Upload first and second pages. The system will match them based on names and merge them into a master PDF.")
+        st.write("Upload first and Second pages. The system will match them based on names and merge them into a master PDF.")
         col1, col2 = st.columns(2)
         with col1:
-            first_pages = st.file_uploader("Upload first pages", type=["pdf"], accept_multiple_files=True, key="first_pages_pair")
+            first_pages = st.file_uploader("Upload First pages", type=["pdf"], accept_multiple_files=True, key="first_pages_pair")
         with col2:
-            second_pages = st.file_uploader("Upload second pages", type=["pdf"], accept_multiple_files=True, key="second_pages_pair")
+            second_pages = st.file_uploader("Upload Second pages", type=["pdf"], accept_multiple_files=True, key="second_pages_pair")
             
         if st.button("Merge pairs into master PDF", type="primary"):
             if not first_pages or not second_pages:
@@ -446,7 +446,7 @@ def render_merge_pdfs_tool():
                         
                         if not match:
                             unmatched_count += 1
-                            report_rows.append({"First Page": first_file.name, "Second Page": "", "Common Names": common_names, "Score": score, "Status": "No Match"})
+                            report_rows.append({"First page": first_file.name, "Second page": "", "Common Names": common_names, "Score": score, "Status": "No Match"})
                             continue
                             
                         try:
@@ -462,9 +462,9 @@ def render_merge_pdfs_tool():
                             
                             used_second.add(match.name)
                             merged_count += 1
-                            report_rows.append({"First Page": first_file.name, "Second Page": match.name, "Common Names": common_names, "Score": score, "Status": "Merged"})
+                            report_rows.append({"First page": first_file.name, "Second page": match.name, "Common Names": common_names, "Score": score, "Status": "Merged"})
                         except Exception as e:
-                            report_rows.append({"First Page": first_file.name, "Second Page": match.name, "Common Names": common_names, "Score": score, "Status": f"Error: {e}"})
+                            report_rows.append({"First page": first_file.name, "Second page": match.name, "Common Names": common_names, "Score": score, "Status": f"Error: {e}"})
                             
                     pdf_bytes = master_pdf.tobytes(garbage=4, deflate=True)
                     master_pdf.close()
@@ -474,24 +474,24 @@ def render_merge_pdfs_tool():
                     with pd.ExcelWriter(report_buffer, engine="openpyxl") as writer: df.to_excel(writer, index=False)
                     
                     st.success(f"Process complete! Merged {merged_count} pairs. {unmatched_count} unmatched.")
-                    st.download_button("Download Master PDF", data=pdf_bytes, file_name="Master_merged_pairs.pdf", mime="application/pdf")
-                    st.download_button("Download Merge Report", data=report_buffer.getvalue(), file_name="Merge_report.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                    st.download_button("Download master PDF", data=pdf_bytes, file_name="Master_merged_pairs.pdf", mime="application/pdf")
+                    st.download_button("Download merge report", data=report_buffer.getvalue(), file_name="Merge_report.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
                     
     with triplet_tab:
-        st.write("Upload first, second, and third pages. The system matches all three based on names into a Master PDF.")
+        st.write("Upload first, second, and Third pages. The system matches all three based on names into a Master PDF.")
         col1, col2, col3 = st.columns(3)
         with col1:
-            first_pages_trip = st.file_uploader("Upload first pages", type=["pdf"], accept_multiple_files=True, key="first_pages_trip")
+            first_pages_trip = st.file_uploader("Upload First pages", type=["pdf"], accept_multiple_files=True, key="first_pages_trip")
         with col2:
-            second_pages_trip = st.file_uploader("Upload second pages", type=["pdf"], accept_multiple_files=True, key="second_pages_trip")
+            second_pages_trip = st.file_uploader("Upload Second pages", type=["pdf"], accept_multiple_files=True, key="second_pages_trip")
         with col3:
-            third_pages_trip = st.file_uploader("Upload third pages", type=["pdf"], accept_multiple_files=True, key="third_pages_trip")
+            third_pages_trip = st.file_uploader("Upload Third pages", type=["pdf"], accept_multiple_files=True, key="third_pages_trip")
             
-        if st.button("Merge Triplets into Master PDF", type="primary"):
+        if st.button("Merge into Master PDF", type="primary"):
             if not first_pages_trip or not second_pages_trip or not third_pages_trip:
                 st.warning("Please upload files into all three boxes.")
             else:
-                with st.spinner("Matching and Merging..."):
+                with st.spinner("Matching and merging..."):
                     master_pdf = fitz.open()
                     report_rows = []
                     used_second = set()
@@ -504,7 +504,7 @@ def render_merge_pdfs_tool():
                         
                         if not match2 or not match3:
                             unmatched_count += 1
-                            report_rows.append({"First Page": first_file.name, "Second Page": match2.name if match2 else "MISSING", "Third Page": match3.name if match3 else "MISSING", "Status": "Incomplete Match"})
+                            report_rows.append({"First page": first_file.name, "Second page": match2.name if match2 else "MISSING", "Third page": match3.name if match3 else "MISSING", "Status": "Incomplete Match"})
                             continue
                             
                         try:
@@ -526,9 +526,9 @@ def render_merge_pdfs_tool():
                             used_second.add(match2.name)
                             used_third.add(match3.name)
                             merged_count += 1
-                            report_rows.append({"First Page": first_file.name, "Second Page": match2.name, "Third Page": match3.name, "Status": "Merged 3 PDFs"})
+                            report_rows.append({"First page": first_file.name, "Second page": match2.name, "Third page": match3.name, "Status": "Merged 3 PDFs"})
                         except Exception as e:
-                            report_rows.append({"First Page": first_file.name, "Second Page": match2.name, "Third Page": match3.name, "Status": f"Error: {e}"})
+                            report_rows.append({"First page": first_file.name, "Second page": match2.name, "Third page": match3.name, "Status": f"Error: {e}"})
                             
                     pdf_bytes = master_pdf.tobytes(garbage=4, deflate=True)
                     master_pdf.close()
@@ -538,14 +538,14 @@ def render_merge_pdfs_tool():
                     with pd.ExcelWriter(report_buffer, engine="openpyxl") as writer: df.to_excel(writer, index=False)
                     
                     st.success(f"Process complete! Merged {merged_count} triplets. {unmatched_count} incomplete.")
-                    st.download_button("Download Master PDF (Triplets)", data=pdf_bytes, file_name="Master.pdf", mime="application/pdf")
+                    st.download_button("Download master PDF", data=pdf_bytes, file_name="Master.pdf", mime="application/pdf")
                     st.download_button("Download  merge report", data=report_buffer.getvalue(), file_name="Merge_report.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 
 # ==========================================
 # MASTER TABS
 # ==========================================
 st.title("My Workspace")
-app_tabs = st.tabs(["🏦 Stanbic Generator", "📧 PRS Deeds", "📑 Merge PDFs", "✉️ Mail Merge"])
+app_tabs = st.tabs(["Stanbic Excel Generator", "PRS Deeds", "Merge PDFs", "Mail Merge"])
 
 with app_tabs[0]: render_stanbic_tool()
 with app_tabs[1]: render_email_dispatch_tool()
