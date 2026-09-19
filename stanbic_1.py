@@ -11,6 +11,7 @@ from pypdf import PdfReader, PdfWriter
 import streamlit as st
 from email.message import EmailMessage
 from email.utils import make_msgid
+from mail_merge import render_mail_merge_tool
 
 # ==========================================
 # CONFIGURATION & CSS (Background + Transitions)
@@ -544,8 +545,9 @@ def render_merge_pdfs_tool():
 # MASTER TABS
 # ==========================================
 st.title("My Workspace")
-app_tabs = st.tabs(["🏦 Stanbic Generator", "📧 PRS Deeds", "📑 Merge PDFs"])
+app_tabs = st.tabs(["🏦 Stanbic Generator", "📧 PRS Deeds", "📑 Merge PDFs", "✉️ Mail Merge"])
 
 with app_tabs[0]: render_stanbic_tool()
 with app_tabs[1]: render_email_dispatch_tool()
 with app_tabs[2]: render_merge_pdfs_tool()
+with app_tabs[3]: render_mail_merge_tool()
