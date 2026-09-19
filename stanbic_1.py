@@ -6,7 +6,7 @@ import base64
 import smtplib
 import pandas as pd
 import pdfplumber
-import fitz  # PyMuPDF
+import PyMuPDF
 from pypdf import PdfReader, PdfWriter
 import streamlit as st
 from email.message import EmailMessage
@@ -145,7 +145,7 @@ def extract_details_from_pdf_bytes(pdf_bytes, filename):
     except: pass
 
     try:
-        doc = fitz.open(stream=pdf_bytes, filetype="pdf")
+        doc = PyMuPDF.open(stream=pdf_bytes, filetype="pdf")
         raw_text = "".join(page.get_text() for page in doc)
         doc.close()
         
@@ -432,7 +432,7 @@ def render_merge_pdfs_tool():
                 st.warning("Please upload files into both boxes.")
             else:
                 with st.spinner("Matching and merging..."):
-                    master_pdf = fitz.open()
+                    master_pdf = PyMuPDF.open()
                     report_rows = []
                     used_second = set()
                     merged_count, unmatched_count = 0, 0
@@ -447,12 +447,12 @@ def render_merge_pdfs_tool():
                             
                         try:
                             first_file.seek(0)
-                            doc1 = fitz.open(stream=first_file.read(), filetype="pdf")
+                            doc1 = PyMuPDF.open(stream=first_file.read(), filetype="pdf")
                             master_pdf.insert_pdf(doc1)
                             doc1.close()
                             
                             match.seek(0)
-                            doc2 = fitz.open(stream=match.read(), filetype="pdf")
+                            doc2 = PyMuPDF.open(stream=match.read(), filetype="pdf")
                             master_pdf.insert_pdf(doc2)
                             doc2.close()
                             
@@ -488,7 +488,7 @@ def render_merge_pdfs_tool():
                 st.warning("Please upload files into all three boxes.")
             else:
                 with st.spinner("Matching and merging..."):
-                    master_pdf = fitz.open()
+                    master_pdf = PyMuPDF.open()
                     report_rows = []
                     used_second = set()
                     used_third = set()
@@ -505,17 +505,17 @@ def render_merge_pdfs_tool():
                             
                         try:
                             first_file.seek(0)
-                            doc1 = fitz.open(stream=first_file.read(), filetype="pdf")
+                            doc1 = PyMuPDF.open(stream=first_file.read(), filetype="pdf")
                             master_pdf.insert_pdf(doc1)
                             doc1.close()
                             
                             match2.seek(0)
-                            doc2 = fitz.open(stream=match2.read(), filetype="pdf")
+                            doc2 = PyMuPDF.open(stream=match2.read(), filetype="pdf")
                             master_pdf.insert_pdf(doc2)
                             doc2.close()
                             
                             match3.seek(0)
-                            doc3 = fitz.open(stream=match3.read(), filetype="pdf")
+                            doc3 = PyMuPDF.open(stream=match3.read(), filetype="pdf")
                             master_pdf.insert_pdf(doc3)
                             doc3.close()
                             
