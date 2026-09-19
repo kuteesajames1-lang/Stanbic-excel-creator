@@ -196,10 +196,6 @@ def send_email_with_attachment_bytes(sender_email, app_password, recipient_email
         </html>
         """
         
-        # Set a plain text fallback, then add the HTML version
-        msg.set_content(f"Dear {last_name},\n\nPlease view this email in an HTML-compatible client.")
-        msg.add_alternative(html_body, subtype='html')
-        
         # 4. Read the GIF file and embed it inline
         try:
             with open("signature.gif", "rb") as img:
@@ -370,7 +366,7 @@ def render_email_dispatch_tool():
                             zipf.writestr(target.name, output_stream.getvalue())
                             
                     st.success("All PDFs merged successfully!")
-                    st.download_button("Download Merged PDFs (ZIP)", data=zip_buffer.getvalue(), file_name="Merged_PDFs.zip", mime="application/zip")
+                    st.download_button("Download merged PDFs (ZIP)", data=zip_buffer.getvalue(), file_name="Merged_PDFs.zip", mime="application/zip")
 
     with step2:
         st.write("Extract details from merged PDFs and send emails automatically.")
@@ -384,9 +380,9 @@ def render_email_dispatch_tool():
         with col2:
             app_password = st.text_input("App Password", type="password", help="Enter the 16-character Google App Password")
             
-        merged_pdfs = st.file_uploader("Upload Merged PDFs to Send", type=["pdf"], accept_multiple_files=True, key="dispatch_pdfs")
+        merged_pdfs = st.file_uploader("Upload merged PDFs to send", type=["pdf"], accept_multiple_files=True, key="dispatch_pdfs")
         
-        if st.button("Process & Send Emails", type="primary"):
+        if st.button("Process & send emails", type="primary"):
             if not app_password: st.warning("Please enter the App Password.")
             elif not merged_pdfs: st.warning("Please upload at least one PDF to send.")
             else:
